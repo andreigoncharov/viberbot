@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: aioviber
+Version: 0.2
+Summary: Asynchronous Python API for building Viber bots.
+Home-page: https://github.com/nonamenix/aioviber.git
+Author: nonamenix
+Author-email: nonamenix@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
