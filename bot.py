@@ -23,7 +23,7 @@ bot = Bot(
     auth_token="4ab6eddbfae7d3c9-16acc99a2fc10bcf-e816a61fc3011aa9",  # Public account auth token
     host="localhost",  # should be available from wide area network
     port=8000,
-    webhook='https://489dea38.ngrok.io',  # Webhook url
+    webhook='https://e343428f.ngrok.io',  # Webhook url
 )
 
 '''
@@ -77,20 +77,15 @@ async def test(chat: Chat, matched):
     items = await search.sections(city)
     buttons = []
     for item in items:
-        image = Button(action_body=f"to-category-{item['id']}", columns=6, rows=4, action_type="open-url",
-                       image=f"https://pizzacoffee.by/{item['picture']}")
+        image = Button(action_body=f"to-category-{item['id']}", columns=6, rows=5, action_type="reply",
+                       image=f"https://pizzacoffee.by/{item['picture']}", text=f'<font color=#323232><b>{item["name"]}</b></font>')
 
-        title_and_text = Button(action_body=f"to-category-{item['id']}", columns=6, rows=1,  action_type="open-url",
+        title_and_text = Button(action_body=f"to-category-{item['id']}", columns=6, rows=1,  action_type="reply",
                                 text=f'<font color=#323232><b>{item["name"]}</b></font>', text_size="medium",
                                 text_v_align='middle', text_h_align='center')
 
-        add = Button(action_body=f"to-category-{item['id']}", columns=6, rows=1, action_type="reply",
-                     text='<font color=#ffffff>Перейти к категории</font>', text_size="large", text_v_align='middle',
-                     text_h_align='center')
-
         buttons.append(image)
         buttons.append(title_and_text)
-        buttons.append(add)
 
     results = Carousel(buttons=buttons)
 
@@ -121,22 +116,17 @@ async def pizza_cat(chat: Chat, matched):
                 if s == '&quot;Double Pizza&quot; пиццы с двойным сырным дном ':
                     s = 'Пиццы с двойным сырным дном'
 
-                image = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=4, action_type="open-url",
+                image = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=5, action_type="reply",
                                image=f"https://pizzacoffee.by/{item['picture']}")
 
                 title_and_text = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=1,
-                                        action_type="open-url",
+                                        action_type="reply",
                                         text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
                                         text_v_align='middle', text_h_align='center')
 
-                add = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=1, action_type="reply",
-                             text='<font color=#ffffff>Перейти к категории</font>', text_size="medium",
-                             text_v_align='middle',
-                             text_h_align='center')
-
                 buttons.append(image)
                 buttons.append(title_and_text)
-                buttons.append(add)
+
                 i += 1
                 if len(buttons) == 18 and i < len(items):
                     results = Carousel(buttons=buttons)
@@ -156,21 +146,15 @@ async def pizza_cat(chat: Chat, matched):
             for item, key in zip(items, keys):
                 s = item["name"]
 
-                image = Button(action_body=f'get-more-info-{key}', columns=6, rows=4, action_type="open-url",
+                image = Button(action_body=f'get-more-info-{key}', columns=6, rows=5, action_type="reply",
                                image=f"https://pizzacoffee.by/{item['picture']}")  # resized
 
-                title_and_text = Button(action_body=f'get-more-info-{key}', columns=6, rows=1, action_type="open-url",
+                title_and_text = Button(action_body=f'get-more-info-{key}', columns=6, rows=1, action_type="reply",
                                         text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
                                         text_v_align='middle', text_h_align='left')
 
-                add = Button(action_body=f'get-more-info-{key}', columns=6, rows=1, action_type="reply",
-                             text='<font color=#ffffff>Подробнее</font>', text_size="medium",
-                             text_v_align='middle',
-                             text_h_align='center')
-
                 buttons.append(image)
                 buttons.append(title_and_text)
-                buttons.append(add)
 
                 i += 1
                 if len(buttons) == 18 and i < len(items):
@@ -203,21 +187,16 @@ async def pizza_cat(chat: Chat, matched):
         for item, key in zip(items, keys):
             s = str(item['name'])
             s = s.replace("&quot;", "'")
-            image = Button(action_body=f'get-more-info-{key}', columns=6, rows=4, action_type="open-url",
+            image = Button(action_body=f'get-more-info-{key}', columns=6, rows=5, action_type="reply",
                            image=f"https://pizzacoffee.by/{item['picture_resized']}")  # resized
 
-            title_and_text = Button(action_body=f'get-more-info-{key}', columns=6, rows=1, action_type="open-url",
+            title_and_text = Button(action_body=f'get-more-info-{key}', columns=6, rows=1, action_type="reply",
                                     text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
                                     text_v_align='middle', text_h_align='left')
 
-            add = Button(action_body=f'get-more-info-{key}', columns=6, rows=1, action_type="reply",
-                         text='<font color=#ffffff>Подробнее</font>', text_size="medium",
-                         text_v_align='middle',
-                         text_h_align='center')
-
             buttons.append(image)
             buttons.append(title_and_text)
-            buttons.append(add)
+
             i += 1
             if len(buttons) == 18 and i < len(items):
                 results = Carousel(buttons=buttons)
@@ -270,21 +249,15 @@ async def to_subcat(chat: Chat, matched):
         for item, key in zip(items, keys):
             s = str(item['name'])
             s = s.replace("&quot;", "'")
-            image = Button(action_body=f"get-more-info-{key}", columns=6, rows=4, action_type="open-url",
+            image = Button(action_body=f"get-more-info-{key}", columns=6, rows=5, action_type="reply",
                            image=f"https://pizzacoffee.by/{item['picture']}")
 
-            title_and_text = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="open-url",
+            title_and_text = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="reply",
                                     text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
                                     text_v_align='middle', text_h_align='left')
 
-            add = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="reply",
-                         text=f'<font color=#ffffff>Подробнее</font>', text_size="large",
-                         text_v_align='middle',
-                         text_h_align='center')
-
             buttons.append(image)
             buttons.append(title_and_text)
-            buttons.append(add)
             i += 1
             if len(buttons) == 18 and i < len(items):
                 results = Carousel(buttons=buttons)
@@ -355,10 +328,10 @@ async def add(chat: Chat, matched):
             for category, item in zip(categories, items):
                 text, url, key = await search.more_info(category[0], item[0])
 
-                image = Button(action_body=f'none', columns=6, rows=4, action_type="open-url",
-                               image=f"https://pizzacoffee.by/{url}")  # resized
+                image = Button(action_body=f'none', columns=6, rows=4, action_type="reply",
+                               image=f"https://pizzacoffee.by/{url}")
 
-                title_and_text = Button(action_body=f'none', columns=6, rows=1, action_type="open-url",
+                title_and_text = Button(action_body=f'none', columns=6, rows=1, action_type="reply",
                                         text=f'<font color=#323232><b>{text}</b></font>', text_size="medium",
                                         text_v_align='middle', text_h_align='left')
 

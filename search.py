@@ -11,8 +11,7 @@ async def fetch(session, url):
 
 async def sections(city):
     async with aiohttp.ClientSession() as session:
-        w = 50
-        html = await fetch(session, f'https://pizzacoffee.by/api/?e=sections&token=1&city={city}&resized_picture=w:{150},h:{150},t:PROPORTIONAL_ALT')
+        html = await fetch(session, f'https://pizzacoffee.by/api/?e=sections&token=1&city={city}')
         result = []
         for key, value in html.items():
             if value["show_main"] == "1":
@@ -22,7 +21,7 @@ async def sections(city):
 async def subcat(p_id):
     async with aiohttp.ClientSession() as session:
         w = 350
-        html = await fetch(session, f'https://pizzacoffee.by/api/?e=sections&parent={p_id}&token=1&resized_picture=w:{150},h:{150}')
+        html = await fetch(session, f'https://pizzacoffee.by/api/?e=sections&parent={p_id}&token=1')
         result = []
         for key, value in html.items():
             result.append(value)
@@ -32,7 +31,7 @@ async def subcat_pizza(p_id):
     async with aiohttp.ClientSession() as session:
         w = 50
         html = await fetch(session,
-                           f'https://pizzacoffee.by/api/?e=products&parent={p_id}&token=1&resized_picture=w:{w},h:{w*1.5},t:PROPORTIONAL_ALT')
+                           f'https://pizzacoffee.by/api/?e=products&parent={p_id}&token=1')
         result = []
         keys = []
         print(p_id)
@@ -49,7 +48,7 @@ async def more_info_pizza(p_id, c_id):
         p_id = int(p_id)
         c_id = c_id
         w = 50
-        html = await fetch(session, f'https://pizzacoffee.by/api/?e=products&parent={p_id}&token=1&resized_picture=ww:{w},h:{w*1.5},t:PROPORTIONAL_ALT')
+        html = await fetch(session, f'https://pizzacoffee.by/api/?e=products&parent={p_id}&token=1')
         result = []
         url = ''
         s = ''
@@ -66,7 +65,7 @@ async def more_info(p_id, c_id):
         p_id = int(p_id)
         c_id = c_id
         w = 50
-        html = await fetch(session, f'https://pizzacoffee.by/api/?e=products&parent={p_id}&token=1&resized_picture=w:{w},h:{w*1.5},t:PROPORTIONAL_ALT')
+        html = await fetch(session, f'https://pizzacoffee.by/api/?e=products&parent={p_id}&token=1&')
         result = []
         url = ''
         s = ''
@@ -88,7 +87,7 @@ async def get():
 async def get_city():
     async with aiohttp.ClientSession() as session:
         w = 50
-        html = await fetch(session, f'https://pizzacoffee.by/api/?e=city&token=1&resized_picture=w:{w},h:{w*1.5},t:PROPORTIONAL_ALT')
+        html = await fetch(session, f'https://pizzacoffee.by/api/?e=city&token=1')
     return html.items()
 
 async def name_i(p_id, c_id):
@@ -104,13 +103,16 @@ async def name_i(p_id, c_id):
 
 async def json_(u_id):
     phone, name, products, items, counts = await db.get_for_json(u_id, loop)
-    r = {}
+    r = []
     for product, item, count in zip(products, items, counts):
         name = await name_i(product[0], item[0])
-        r += ({"id": item, "name": name, "price": 1, "quantity": count[0]})
+        r.append(({"id": item[0], "name": name, "price": 1, "quantity": count[0]}))
     res = json.dumps(r)
     print(res)
-    #link = f"https://pizzacoffee.by/api/?e=order&login={phone}&password={phone}&username={name}&phone={phone}&products="
+    link = f"https://pizzacoffee.by/api/?e=order&login={phone[0]}&password={phone[0]}&username={name[0]}&phone={phone[0]}&products={res}"
+    new_link = str(link.replace('[', ''))
+    new_link = new_link.replace(']', '')
+    print(new_link)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

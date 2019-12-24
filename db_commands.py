@@ -146,6 +146,7 @@ class Com:
         await cur.execute('select count from basket where u_id = %s', (id))
         counts = await cur.fetchall()
         con.close()
+        print(phone[0], name[0], products, items, counts)
         return phone[0], name[0], products, items, counts
 
     @staticmethod

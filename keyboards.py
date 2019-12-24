@@ -49,21 +49,16 @@ async def items_keyboard(category):
     for item, key in zip(items, keys):
         s = item["name"]
 
-        image = Button(action_body=f"get-more-info-{key}", columns=6, rows=4, action_type="open-url",
+        image = Button(action_body=f"get-more-info-{key}", columns=6, rows=5, action_type="reply",
                        image=f"https://pizzacoffee.by/{item['picture']}")
 
-        title_and_text = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="open-url",
+        title_and_text = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="reply",
                                 text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
                                 text_v_align='middle', text_h_align='left')
 
-        add = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="reply",
-                     text=f'<font color=#ffffff>Подробнее</font>', text_size="large",
-                     text_v_align='middle',
-                     text_h_align='center')
 
         buttons.append(image)
         buttons.append(title_and_text)
-        buttons.append(add)
 
     return buttons
 
@@ -75,20 +70,14 @@ async def to_subcategory(category,loop):
         if s == '&quot;Double Pizza&quot; пиццы с двойным сырным дном ':
             s = 'Пиццы с двойным сырным дном'
 
-        image = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=4, action_type="open-url",
+        image = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=5, action_type="reply",
                        image=f"https://pizzacoffee.by/{item['picture_resized']}")
 
-        title_and_text = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=1, action_type="open-url",
+        title_and_text = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=1, action_type="reply",
                                 text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
                                 text_v_align='middle', text_h_align='center')
-
-        add = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=1, action_type="reply",
-                     text='<font color=#ffffff>Перейти к категории</font>', text_size="medium", text_v_align='middle',
-                     text_h_align='center')
-
         buttons.append(image)
         buttons.append(title_and_text)
-        buttons.append(add)
 
     return buttons
 
@@ -98,19 +87,13 @@ async def pizza_keyboard(p_id):
     for item, key in zip(items, keys):
         s = str(item['name'])
         s = s.replace("&quot;", "'")
-        image = Button(action_body=f"get-more-info-{key}", columns=6, rows=4, action_type="open-url",
+        image = Button(action_body=f"get-more-info-{key}", columns=6, rows=5, action_type="reply",
                        image=f"https://pizzacoffee.by/{item['picture_resized']}")
 
-        title_and_text = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="open-url",
+        title_and_text = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="reply",
                                 text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
                                 text_v_align='middle', text_h_align='left')
 
-        add = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="reply",
-                     text=f'<font color=#ffffff>Подробнее</font>', text_size="large",
-                     text_v_align='middle',
-                     text_h_align='center')
-
         buttons.append(image)
         buttons.append(title_and_text)
-        buttons.append(add)
     return buttons
