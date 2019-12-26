@@ -109,16 +109,24 @@ class Com:
         con.close()
 
     @staticmethod
-    async def add_item_to_basket(id, i_id, c_id, loop):
+    async def add_item_to_basket(id, i_id, c_id, price, loop):
         con, cur = await create_con(loop)
-        await cur.execute('insert into basket values(%s, %s, %s, %s)', (id, i_id, c_id, 0))
-        await con.commit()
-        con.close()
+
+        if price == '' or price == ' ':
+            await cur.execute('insert into basket values(%s, %s, %s, %s, %s)', (id, i_id, c_id, 0, 0))
+            await con.commit()
+            con.close()
+        else:
+            await cur.execute('insert into basket values(%s, %s, %s, %s, %s)', (id, i_id, c_id, 0, float(price)))
+            await con.commit()
+            con.close()
 
     @staticmethod
     async def update_count_to_basket(id, c_id, count, loop):
         con, cur = await create_con(loop)
-        await cur.execute('update basket set count=%s where u_id = %s and c_id = %s', (count, id, c_id))
+        print(count)
+        print(c_id)
+        await cur.execute('update basket set count=%s where u_id = %s and i_id = %s', (count, id, c_id))
         await con.commit()
         con.close()
 
@@ -282,6 +290,8 @@ class Com:
     @staticmethod
     async def update_more_info_c_id(id, p_id, loop):
         con, cur = await create_con(loop)
+        print(id)
+        print(p_id)
         await cur.execute('update users set c_id = %s where id = %s', (p_id, id))
         await con.commit()
         con.close()

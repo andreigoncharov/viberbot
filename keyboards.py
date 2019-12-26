@@ -10,6 +10,31 @@ adim_kb= [Button(action_body="send_messages", columns=6, rows=1, bg_color="#2db9
          Button(action_body="stat-", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='Статистика', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
          Button(action_body="otmena", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='Назад', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle")]
 
+ask_kb = [Button(action_body="Контакты", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='Контакты', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
+         Button(action_body="Условия доставки", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='Условия доставки', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
+         Button(action_body="Способы оплаты", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='Способы оплаты', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
+Button(action_body="Клубная карта", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply",
+       text='Клубная карта', text_size="regular", text_opacity=60, text_h_align="center", text_v_align="middle"),
+          Button(action_body="otmena", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply",
+                 text='Назад', text_size="regular", text_opacity=60, text_h_align="center",
+                 text_v_align="middle")]
+
+card = [Button(action_body="Почему стоит приобрести нашу клубную карту", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='Почему стоит приобрести нашу клубную карту?', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
+        Button(action_body="КАК ОНА РАБОТАЕТ?", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply",
+               text='ЧТО ТАКОЕ КЛУБНАЯ КАРТА И КАК ОНА РАБОТАЕТ?', text_size="regular", text_opacity=60, text_h_align="center",
+               text_v_align="middle"),
+        Button(action_body="КАКОВА МАКСИМАЛЬНАЯ СКИДКА, КОТОРУЮ ВЫ МОЖЕТЕ ПОЛУЧИТЬ С ПОМОЩЬЮ КАРТЫ", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply",
+               text='КАКОВА МАКСИМАЛЬНАЯ СКИДКА, КОТОРУЮ ВЫ МОЖЕТЕ ПОЛУЧИТЬ С ПОМОЩЬЮ КАРТЫ?', text_size="regular", text_opacity=60, text_h_align="center",
+               text_v_align="middle"),
+        Button(action_body="КАК МНЕ ПРИОБРЕСТИ КЛУБНУЮ КАРТУ", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply",
+               text='КАК МНЕ ПРИОБРЕСТИ КЛУБНУЮ КАРТУ?', text_size="regular", text_opacity=60, text_h_align="center",
+               text_v_align="middle"),
+        Button(action_body="СМОГУ ЛИ Я ИСПОЛЬЗОВАТЬ КАРТУ", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='СМОГУ ЛИ Я ИСПОЛЬЗОВАТЬ КАРТУ, ЕСЛИ ЗАБЫЛ ЕЕ ДОМА, ЛИШЬ НАЗВАВ СВОЕ ИМЯ?', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
+         Button(action_body="КАК УЗНАТЬ", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='КАК УЗНАТЬ, СКОЛЬКО БАЛЛОВ У МЕНЯ УЖЕ ЕСТЬ?', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
+          Button(action_body="otmena", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply",
+                 text='Назад', text_size="regular", text_opacity=60, text_h_align="center",
+                 text_v_align="middle")]
+
 
 ras = [Button(action_body="no_orders", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='Нет заказов', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
          Button(action_body="one-or-more", columns=6, rows=1, bg_color="#2db9b9", silent=True, action_type="reply", text='1 или более заказов', text_size= "regular", text_opacity=60, text_h_align="center", text_v_align= "middle"),
@@ -71,7 +96,7 @@ async def to_subcategory(category,loop):
             s = 'Пиццы с двойным сырным дном'
 
         image = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=5, action_type="reply",
-                       image=f"https://pizzacoffee.by/{item['picture_resized']}")
+                       image=f"https://pizzacoffee.by/{item['picture']}")
 
         title_and_text = Button(action_body=f'to-subcat-{item["id"]}', columns=6, rows=1, action_type="reply",
                                 text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",
@@ -88,7 +113,7 @@ async def pizza_keyboard(p_id):
         s = str(item['name'])
         s = s.replace("&quot;", "'")
         image = Button(action_body=f"get-more-info-{key}", columns=6, rows=5, action_type="reply",
-                       image=f"https://pizzacoffee.by/{item['picture_resized']}")
+                       image=f"https://pizzacoffee.by/{item['picture']}")
 
         title_and_text = Button(action_body=f"get-more-info-{key}", columns=6, rows=1, action_type="reply",
                                 text=f'<font color=#323232><b>{s}</b></font>', text_size="medium",

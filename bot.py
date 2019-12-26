@@ -23,7 +23,7 @@ bot = Bot(
     auth_token="4ab6eddbfae7d3c9-16acc99a2fc10bcf-e816a61fc3011aa9",  # Public account auth token
     host="localhost",  # should be available from wide area network
     port=8000,
-    webhook='https://e343428f.ngrok.io',  # Webhook url
+    webhook='https://c22e8e8b.ngrok.io',  # Webhook url
 )
 
 '''
@@ -78,7 +78,7 @@ async def test(chat: Chat, matched):
     buttons = []
     for item in items:
         image = Button(action_body=f"to-category-{item['id']}", columns=6, rows=5, action_type="reply",
-                       image=f"https://pizzacoffee.by/{item['picture']}", text=f'<font color=#323232><b>{item["name"]}</b></font>')
+                       image=f"https://pizzacoffee.by/{item['picture']}")
 
         title_and_text = Button(action_body=f"to-category-{item['id']}", columns=6, rows=1,  action_type="reply",
                                 text=f'<font color=#323232><b>{item["name"]}</b></font>', text_size="medium",
@@ -157,11 +157,11 @@ async def pizza_cat(chat: Chat, matched):
                 buttons.append(title_and_text)
 
                 i += 1
-                if len(buttons) == 18 and i < len(items):
+                if len(buttons) == 12 and i < len(items):
                     results = Carousel(buttons=buttons)
                     await chat.send_rich_media(rich_media=results, keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
                     buttons.clear()
-                elif len(buttons) != 18 and i == len(items):
+                elif len(buttons) != 12 and i == len(items):
                     results = Carousel(buttons=buttons)
                     await chat.send_rich_media(rich_media=results, keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
                     buttons.clear()
@@ -221,11 +221,12 @@ async def get_more_info(chat : Chat, matched):
     u_id = chat.message.sender.id
     category = int(chat.message.message.text[14:])
     parent_id = await db.get_more_info(u_id, loop)
-    text, url, key = await search.more_info(parent_id, category)
+    text, url, key, price = await search.more_info(parent_id, category)
     button = [Button(action_body=f'add-to-basket-{key}', columns=6, rows=1, action_type="reply",
                      text='<font color=#ffffff>Добавить в корзину</font>', text_size="large", text_v_align='middle',
                      text_h_align='center', bg_color='#2F1AB2')]
     result = Carousel(buttons=button, buttons_group_columns=6, buttons_group_rows=1)
+    text += f'\nЦена: {price} руб.'
     if len(text) < 2:
         await chat.send_picture('https://pizzacoffee.by/' + url)
         await chat.send_rich_media(rich_media=result)
@@ -259,7 +260,7 @@ async def to_subcat(chat: Chat, matched):
             buttons.append(image)
             buttons.append(title_and_text)
             i += 1
-            if len(buttons) == 18 and i < len(items):
+            if len(buttons) == 12 and i < len(items):
                 results = Carousel(buttons=buttons)
                 await chat.send_rich_media(rich_media=results, keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
                 buttons.clear()
@@ -277,7 +278,9 @@ async def add(chat: Chat, matched):
     u_id = chat.message.sender.id
     c_id = await db.get_more_info(u_id, loop)
     i_id = int(chat.message.message.text[14:])
-    await db.add_item_to_basket(u_id, i_id, c_id, loop)
+    price = await search.get_price(c_id, i_id)
+    await db.add_item_to_basket(u_id, i_id, c_id, price, loop)
+    await db.update_more_info_c_id(u_id, i_id, loop)
     button = [Button(action_body=f'otmena', columns=6, rows=1, action_type="reply",
                      text='<font color=#ffffff>Отмена</font>', text_size="large", text_v_align='middle',
                      text_h_align='center', bg_color='#2F1AB2')]
@@ -285,7 +288,6 @@ async def add(chat: Chat, matched):
     await chat.send_text('Какое количество?')
     await chat.send_rich_media(rich_media=result)
     await db.update_context(u_id, f'wait-count', loop)
-    await db.update_more_info_c_id(u_id, c_id, loop)
 
 @bot.command('otmena')
 async def add(chat: Chat, matched):
@@ -344,7 +346,7 @@ async def add(chat: Chat, matched):
                 buttons.append(title_and_text)
                 buttons.append(delete_from_cart)
                 i += 1
-                if len(buttons) == 18 and i < len(items):
+                if len(buttons) == 12 and i < len(items):
                     results = Carousel(buttons=buttons)
                     await chat.send_rich_media(rich_media=results)
                     buttons.clear()
@@ -360,7 +362,7 @@ async def add(chat: Chat, matched):
         else:
             for category, item in zip(categories, items):
 
-                text, url, key = await search.more_info(category[0], item[0])
+                text, url, key, price = await search.more_info(category[0], item[0])
 
                 image = Button(action_body=f'none', columns=6, rows=4, action_type="open-url",
                                image=f"https://pizzacoffee.by/{url}")  # resized
@@ -409,6 +411,84 @@ async def ord(chat: Chat, matched):
     await chat.send_text('Введите ваше ФИО:')
     await db.update_context(u_id, 'wait_fio', loop)
 
+'''
+Вопросы и ответы
+'''
+
+@bot.command('Вопросы и ответы')
+async def v_o(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    await chat.send_text('Категории', keyboard=Keyboard(kb.ask_kb, bg_color="#FFFFFF"))
+
+@bot.command('Контакты')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'E mail: Opros.pizza@gmail.com\nТелефон: +375336093708'
+    await chat.send_text(text, keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
+
+@bot.command('Условия доставки')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'Доставка:2.5 руб\nЧасы доставки: 11:00 - 01:00\nТелефоны доставки: 7424'
+    await chat.send_text(text, keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
+
+@bot.command('Способы оплаты')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'Способы оплаты:\n·Наличными курьеру\n·Банковской картой курьеру\n·Банковской картой на сайте'
+    await chat.send_text(text, keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
+
+@bot.command('Клубная карта')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'Друзья! С радостью сообщаем Вам о прекрасном изменении: новой системе лояльности в Pizza&Coffee!' \
+           ' С ее помощью вы сможете увеличить свой кэшбэк до 30%. Чтобы вы могли досконально во всем разобраться,' \
+           ' мы подготовили для вас руководство в формате вопрос-ответ.'
+    await chat.send_text(text, keyboard=Keyboard(kb.card, bg_color="#FFFFFF"))
+
+@bot.command('Почему стоит приобрести нашу клубную карту')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'С ней вы сэкономите свои средства, а также получите многие другие бонусы, доступные только владельцам карт,' \
+           ' которые сделают каждое посещение Pizza&Coffee еще более приятным и привычным занятием.'
+    await chat.send_text(text, keyboard=Keyboard(kb.card, bg_color="#FFFFFF"))
+
+@bot.command('КАК ОНА РАБОТАЕТ')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'С каждого заказа, который вы сделаете, на карту будет начислено 10% от его суммы в виде баллов.' \
+           'Эти средства вы можете накапливать и использовать при оплате следующих заказов.' \
+           'Например, вы купили большую 43-сантиметровую пиццу «4 сезона» за 21,90 руб. После оплаты этой суммы, на карте окажется 2,19 рублей (10%)' \
+           ' и в следующий раз вы сможете их использовать и сэкономить.' \
+           'А можете просто продолжать накапливать баллы. Обратите внимание, что при оформлении одного заказа вы можете либо потратить свои баллы, либо накопить их, но не одновременно!' \
+           'Также обладатели клубных карт имеют уникальную возможность принимать участие в акциях, проводимых только для обладателей клубных карт!'
+    await chat.send_text(text, keyboard=Keyboard(kb.card, bg_color="#FFFFFF"))
+
+@bot.command('КАКОВА МАКСИМАЛЬНАЯ СКИДКА, КОТОРУЮ ВЫ МОЖЕТЕ ПОЛУЧИТЬ С ПОМОЩЬЮ КАРТЫ')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = '99,9%. На примере с той же большой пиццей «4 сезона», вы сможете приобрести ее за 2 копейки,' \
+           ' если у вас на карте будет накоплено 21,88 балла.' \
+           ' Если баллов больше, то оставшиеся не сгорят, а останутся доступными для будущих заказов.'
+    await chat.send_text(text, keyboard=Keyboard(kb.card, bg_color="#FFFFFF"))
+
+@bot.command('КАК МНЕ ПРИОБРЕСТИ КЛУБНУЮ КАРТУ')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'Ее можно приобрести в любом заведении «Pizza&Coffee», а также на доставку по телефону 7424.'
+    await chat.send_text(text, keyboard=Keyboard(kb.card, bg_color="#FFFFFF"))
+
+@bot.command('СМОГУ ЛИ Я ИСПОЛЬЗОВАТЬ КАРТУ')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'Нет, на карте есть магнитная лента, без проведения карточки мы не сможем ничего на нее зачислить, поэтому старайтесь не забывать!'
+    await chat.send_text(text, keyboard=Keyboard(kb.card, bg_color="#FFFFFF"))
+
+@bot.command('КАК УЗНАТЬ')
+async def nnum(chat: Chat, matched):
+    u_id = chat.message.sender.id
+    text = 'Информацию о количестве накопленных балов Вами вы можете узнать, предъявив карту бармену в любом заведении «Pizza&Coffee», а также позвонив по телефону 7424.'
+    await chat.send_text(text, keyboard=Keyboard(kb.card, bg_color="#FFFFFF"))
 
 '''
 Для администратора
@@ -702,10 +782,10 @@ async def default(chat : Chat):
             count = chat.message.message.text
             if count.isdigit():
                 await chat.send_text('Товар добавлен в корзину!',  keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
-                c_id = await db.get_more_c_id(u_id, loop)
-                await db.update_count_to_basket(u_id, c_id, count, loop)
+                i_id = await db.get_more_c_id(u_id, loop)
+                print(i_id)
+                await db.update_count_to_basket(u_id, i_id, count, loop)
                 await db.update_context(u_id, '', loop)
-                await db.update_more_info_c_id(u_id, 0, loop)
             else:
                 await chat.send_text('Пожалуйста введите целое число:')
         elif context == 'wait_password':
@@ -854,7 +934,8 @@ async def default(chat : Chat):
             tel = chat.message.message.text
             await db.update_tel(u_id, tel, loop)
             await db.update_context(u_id, '', loop)
-            await chat.send_text('Ваш заказ оформлен, ожидайте звонка оператора.')
+            await search.json_(u_id, loop)
+            await chat.send_text('Ваш заказ оформлен, ожидайте звонка оператора.', keyboard=Keyboard(kb.start, bg_color="#FFFFFF"))
 
         elif context == 'wait_start_date':
             date = chat.message.message.text
