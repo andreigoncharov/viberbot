@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import logging
 import asyncio
 from viberbot.api.messages.message import Message
