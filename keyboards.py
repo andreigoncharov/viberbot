@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from aioviber import Keyboard, Button
 import search
 
